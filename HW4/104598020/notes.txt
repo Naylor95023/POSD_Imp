@@ -1,0 +1,374 @@
+Lecture 1 and lecture 2(1st hour)
+
+This folder contains an example on shapes,
+to illustrate:
+
+x0. Hard and harder (Book opening)
+Design, OO, Reuse. Gave example with entrance design.
+x1. class and object, methods and data members
+x2. unit testing
+x3. inheritance:
+   Circle and Square, and Shape
+x4. function working with objects:
+   vector of of shapes, printing shapes
+x5. polymorphism: virtual, late binding
+x6. Incremental and iterative coding
+   (coding-refactoring cycles)
+
+UML should be used throughout the illustration.
+
+Problem. A program is needed for representing
+various 2D shapes including circles, squares,
+lines, etc. The program also computes sums of
+areas and perimeters of multiple shapes stored in
+a properly chosen container.
+
+Constraint: demonstrate the program through
+unit tests.
+
+When adding new features, we want to avoid changing
+existing code as much as possible
+
+Circle-> Circle area-> sum of areas of Circle
+repeat for squares
+repeat for circles and squares
+
+Lecture 2 (2 hrs): Introduction to Design patterns
+(minus Design, Design problem).
+Problem: Composite with shapes
+
+Week 2
+
+Summary of wk 1
+Program to an implementation (class)
+Cover basic object concepts and notations -
+"Specifying Object Implementations"
+Recite: p18
+
+Evolution
+When is a design stable?
+It is when you can extend it by adding
+similar things without
+changing the existing code.
+So when is  areaSum stable?
+It is so when you can have it compute
+area of any newly added
+shape without changing its code and
+other shapes code.
+
+So our goal has been making areaSum stable
+
+We need inheritance, virtual, overriding,
+pointer to object, container
+Polymorphism = inheritance + virtual +
+               override + pointer or ref to base class
+
+"Program to an interface, not an implementation."
+
+Anticipating pattern -
+problem: make area sum and existing classes stable
+Solution: polymorphism
+Consequence: new shapes added without changing existing code
+At this stage, we say that polymorphism solves our design problem
+
+Onward composite pattern
+
+HW#1
+Previously, a program solving the following has been written:
+
+    Problem. A program is needed for representing
+    various 2D shapes including circles, squares,
+    lines, etc. The program also computes sums of
+    areas and perimeters of multiple shapes stored in
+    a properly chosen container.
+
+Making use of the program in of 0922-2015, complete the following requirements
+(1) Add Rectangle class to Shape family.
+(2) We need Graphics objects. A Graphics object is either a SimpleGraphics object,
+which refers to an object of the Shape family, or can be a CompositeGraphics objects,
+which refers to number of Graphics objects.
+(3) A Graphics object has a bounding box which is a Rectangle. Bounding boxes for circle,
+square, and rectangle are specified in the unit tests.
+(4) Similarly, bounding boxes for Graphics objects are specified in the unit tests.
+
+(a)  I have written 10 unit tests. Your job is to add code to project Shapes0915
+    (as of 0922-2015)so that the program compiles correctly and the tests pass.
+    (90 points; 9 points for passing a test)
+(b) Draw a UML class diagram for Shape family and Graphics family. Include in your
+    diagram the member functions and data members used in these programs. (10 points)
+
+Week 3: typhoon, no class
+
+week 4:
+Other first principles: composition, delegate, generics
+
+hour 1&2.
+review of Hw1
+0 How to read ref solution?
+1 student question -> virtual and pure virtual (2 slides)
+2 Composite relies on polymorphism and composition.
+3 Composite works best for data objects that are created,
+manipulated, and destroyed dynamically. A generative,
+recursive mechanism.
+Examples: Groupings of Graphics created in a drawing
+          application.
+4 Go through the Composite pattern
+5 Explain composition in SimpleGraphics->Shape
+
+"Favor object composition over class inheritance.
+
+    How to have abstract class with methods with default implementation,
+    but not allowing instance to be created?
+    An pure virtual method prevents default implementation.
+    1. protected constructor
+    2. public, virtual destructor: when you want polymorphic subclass through base
+       class pointer (avoiding memory leak)
+    3. virtual method with default
+    4. subclassing with public inheritance
+    see this example in the code example in Composite.
+    exercise in class: prevents Graphics class to have instances.
+
+*Design
+The composition from SimpleGraphics ->
+Shape is a design choice.
+Alternative: impose Composite on Shape family.
+
+But then what about making pictures part
+of the composition?
+Would making picture a shape make sense?
+(What does shape and picture have in common?)
+
+Context: recursive composite objects with a tree
+structure are created from different types
+of primitives. New, unknown primitives may
+be added to the composite.
+
+Forces:
+1. you want composition to be simple,
+   so make picture a shape.
+2. shape and picture are sufficiently
+    different that picture should not be a shape.
+
+Solution:
+(a) Use composition from composite to
+   shape and picture.
+(b) Make shape and picture different families.
+
+Consequences:
+*Easy to add new primitives to the composite
+*Can have new type of composite hierarchy created as needed, e.g., solid models
+from shapes.
+* keeps shapes, pictures. etc, separated.
+
+Week 5
+
+Add operations to Graphics
+(1) Adding the operation to Graphics family alone.
+(2) Adding the operation outside Graphics by
+    applying the Visitor pattern.
+
+Example
+Problem:
+  Compute the total area of primitive shapes in
+  a Graphics object
+
+Forces:
+a. Want to use simple design
+b. Want to keep interface of Graphics simple
+
+Consequences
+(1) Simple design indeed, but Graphics interface
+    bloats as you add more operations.
+
+    Must find reasonable default operation that are
+    applicable to objects in the tree.
+
+    Graphics provide the structure (tree),
+    we may need to have many operations
+    working on the tree.
+
+(2) All operations to be performed on the tree structure
+    are conducted in the same way.
+
+    Operation is placed outside Graphics,
+    making the structure simple. Graphics
+    keeps only the essential structure maintenance
+    operations: add, delete, boundingBox.
+
+    Operations performed more indirectly
+    and are more difficult to understand.
+
+describe (* example in class)
+
+getGraphicsAt(Point p):
+  retrieve all composites and primitives that include
+  p in its bounding box by the order they are stored in the tree
+
+sequence diagram: shows object interaction
+class diagram: show how classes are related
+
+Visitor pattern.
+
+Next: Builder
+
+HW#2
+distributed: 1006-2015, in class
+due: 1013-2015, 11:59 pm
+Previously in HW#1, you wrote a program that composes Graphics
+objects, where a SimpleGraphics object points to a Shape object.
+
+Making use of the program of 1006-2015, complete the following requirements
+(1) Make AreaVisitor subclass of the abstract class GraphicsVisitor.
+    GraphicsVisitor should declare the interface operations of a
+    visitor.
+(2) Add an operation "describe" to Graphics through an object of class
+    DescriptionVisitor, which is a subclass of GraphicsVisitor.
+(3) In supporting the operation "describe", you may need to add additional
+    member functions. For example, method "describe" which produces for a Circle
+    of center (0,0) and radius 2)the string "C(0,0,2)".
+
+(a) I have written 5 unit tests. Your job is to add code to project as of 1006-2015
+    so that the program compiles correctly and the tests pass.
+    (90 points; 18 points for passing a test)
+(b) Draw a UML class diagram for Shape family, Graphics family, and the Visitor family.
+    Include in your diagram the member functions and data members used in these
+    programs. (10 points)
+
+week 6
+hw2 review
+The Maze Game
+Factory method
+Builder
+
+week 7
+
+Hw 3
+
+Enhancing on the reference implementation of assignment 2, we want to
+be able to build composite of Graphics objects specified in a given file.
+For example, the file "f1.txt" has the following content:
+
+Comp R(-2,-2,3,4)
+  Comp R(-2,-2,3,3)
+    C(0,0,1)
+    S(-2,-2,2)
+  R(-1,-1,1,3)
+
+Note that this is exactly the string that is obtained with the DescriptionVisitor
+of Assignment 2. In particular, the file contains only one top level (or level 0)
+object, which could be a SimpleGraphics object or a CompositeGraphics object.
+Further, the top level object always begins at the first column of the file;
+constituent objects of a CompositeGraphics object begins at the next level by
+indenting two spaces. For the file "f1.txt", the levels of the corresponding
+lines are:
+
+0
+1
+2
+2
+1
+
+The composite of Graphics objects created from file "f1.txt" is equivalent to the
+object h in the following code snippet:
+
+    CompositeGraphics g;
+    g.add(new SimpleGraphics(new Circle(0,0,1)));
+    g.add(new SimpleGraphics(new Square(-2,-2,2)));
+
+    SimpleGraphics r(new Rectangle (-1,-1,1,3));
+
+    CompositeGraphics h;
+    h.add(&g);
+    h.add(&r);
+
+One way build a composite from an input file
+is to use a pushdown automaton (a.k.a. stack)
+as described in the following pseudo code:
+
+ 1 Read the file "f1.txt" into a string called "contents"
+ 2 While (more lines in "contents")
+ 3   construct current object from the first unprocessed line of contents
+ 4   if (level of current line < level of previous line)
+ 5     pop stack until level == level of current line
+ 6     compose into a CompositeGraphics object
+ 7   push current object onto stack
+ 8 compose whatever remains on stack until only one Graphics object is left on stack
+
+Snapshot of the stack (growing downward):
+
+after line 1 processed:
+0, Comp
+
+after line 2 processed:
+0, Comp
+1, Comp
+
+after line 3 processed:
+0, Comp
+1, Comp
+2, Circle(0,0,1)
+
+after line 4 processed:
+0, Comp
+1, Comp
+2, Circle(0,0,1)
+2, Square(-2,-2,2)
+
+after line 5 processed:
+0, Comp
+1, Comp R(-2,-2,3,3) [Circle(0,0,1), Square(-2,-2,2)] (this happens at the if statement of step 2)
+1, Rectangle(-1,-1,1,3)
+
+after line 8:
+0, Comp R(-2,-2,3,4) [Comp R(-2,-2,3,3) [Circle(0,0,1), Square(-2,-2,2)], Rectangle(-1,-1,1,3)]
+
+Here is what you need to do for this assignment.
+
+(1) Implement the class called GraphicsFactory
+   (45 pts: 15 pts for the first function, 10 pts each for each of the rest)
+
+class GraphicsFactory {
+public:
+  Graphics * buildGraphicsFromFile(const char * fileName); /*implement the pseudo code */
+  string fileContentsAsString(const char * fileName); /* implement line 1 of pseudo code */
+  Graphics * extractGraphicsFromOneLine(std::string & contents, int & level); /*implement line 3 */
+  void compose (); /* implement lines 5, 6 as well as line 9 */
+}
+
+(2) For each member function, write minimum number of tests tests to
+    to cover the following:
+
+    For the function buildGraphicsFromFile:
+      throw an exception if the file does not exist (5 pts)
+      return a correctly constructed CompositeGraphics (10 pts)
+    For the function fileContentsAsString:
+      check that the file content is read into a string correctly (5 pts)
+    For the function extractGraphicsFromOneLine
+      check SimpleGraphics with Circle or Square or Rectangle is returned correctly (10 pts)
+      check CompositeGraphics is returned correctly (5 pts)
+    For the function compose,
+      check the snapshot "after line 5:" above (5 pts)
+      check the snapshot "after line 9:" above (5 pts)
+
+Put all of your test in the header file with name "utHW3.h". Include this file
+from "main.cpp".
+
+(3) Draw class diagram for the program you turn in. (10 pts)
+
+week 8
+Hw3 review
+Chapter 2 - Lexi
+Design problems
+  document structure with Composite
+  formatting (linebreaking) with Strategy
+  Embellishing components with Decorator
+
+Week 9
+Midterm
+
+Week 10
+refactoring: extract all unit tests by class
+Qt project by example
+Multiple look-and-feel with Abstract Factory
+Supporting multiple windows system with Bridge
+Managing user operations with Command
